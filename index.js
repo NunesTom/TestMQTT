@@ -33,14 +33,11 @@ client.on('message', (topic, message, packet) => {
     console.log(message);
 });
 
-var KB16005627_1 = '/iot4decision/gerdau/reader/KB16005627/antenna/1';
-var KB16005627_2 = '/iot4decision/gerdau/reader/KB16005627/antenna/2';
-var KA17005253_1 = '/iot4decision/gerdau/reader/KA17005253/antenna/1';
-var KA17005253_2 = '/iot4decision/gerdau/reader/KA17005253/antenna/2';
-var KA17005264_1 = '/iot4decision/gerdau/reader/KA17005264/antenna/1';
-var KA17005264_2 = '/iot4decision/gerdau/reader/KA17005264/antenna/2';
-var KA17005966_1 = '/iot4decision/gerdau/reader/KA17005966/antenna/1';
-var KA17005966_2 = '/iot4decision/gerdau/reader/KA17005966/antenna/2';
+var serialNumber = (serial, antenna) =>{
+
+    return `/iot4decision/gerdau/reader/${serial}/antenna/${antenna}`;
+
+};
 
 var msg = {
   "epc": "44114000001000004128987024914006",
@@ -49,39 +46,59 @@ var msg = {
   "message": 1
 };
 
-//44114000001000004278320075514000
+//13131904
+/*
+var epcs = [
+'44114000001000004129036097314000',
+'44114000001000004129088097814002',
+'44114000001000004129088099614005',
+'44114000001000004129088099914006',
+];
+*/
+
+//13131906
+var epcs = [
+'44114000001000004128967059914001',
+'44114000001000004128967059814004',
+'44114000001000004128967059714007',
+'44114000001000004128967059314009'
+]
+
+/*
+var epcs = [
+    '44114000001000004128987024914006',
+    '44114000001000004278320074514001',
+    '44114000001000004128959024514007',
+    '44114000001000004128987030914007',
+    '44114000001000004278320075514000',
+    '44114000001000004268320078214009'
+];
+*/
+
+var serials = [
+    'KA17005966',
+    'KA17005253',
+    'KA17005264',
+    'KB16005627'
+];
 
 setInterval(function () {  
-    msg.epc = '44114000001000004128987024914006';
-    client.publish(KA17005966_1, JSON.stringify(msg), { qos: 0 });
 
-    msg.epc = '44114000001000004278320074514001';
-    client.publish(KA17005966_2, JSON.stringify(msg), { qos: 0 });
+    epcs.forEach(epc => { 
+        console.log(epc);
+    }); 
 
-    msg.epc = '44114000001000004128959024514007';
-    client.publish(KA17005966_1, JSON.stringify(msg), { qos: 0 });
+    serials.forEach(serial =>{
+        epcs.forEach(epc => { 
+            msg.epc = epc;
 
-    msg.epc = '44114000001000004128987030914007';
-    client.publish(KA17005966_2, JSON.stringify(msg), { qos: 0 });
+            for (let antenna = 1; antenna <= 2; antenna++) {
+                client.publish(serialNumber(serial,antenna), JSON.stringify(msg), { qos: 0 });
+            }
 
-
-    msg.epc = '44114000001000004278320075514000';    
-    client.publish(KA17005253_1, JSON.stringify(msg), { qos: 0 });
-    msg.epc = '44114000001000004268320078214009';   
-    client.publish(KA17005253_2, JSON.stringify(msg), { qos: 0 });
-
-    msg.epc = '44114000001000004278320075514000';  
-    client.publish(KA17005264_1, JSON.stringify(msg), { qos: 0 });
-    msg.epc = '44114000001000004268320078214009';  
-    client.publish(KA17005264_2, JSON.stringify(msg), { qos: 0 });
-
-    msg.epc = '44114000001000004278320075514000'; 
-    client.publish(KB16005627_1, JSON.stringify(msg), { qos: 0 });
-    msg.epc = '44114000001000004268320078214009';  
-    client.publish(KB16005627_2, JSON.stringify(msg), { qos: 0 });
+        }); 
+    });
 
     console.log(`Publicado! - ${Date.now().toString()}`);
 
 }, 1000);
-
-
